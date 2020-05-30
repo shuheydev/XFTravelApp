@@ -1,0 +1,206 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="XFTravelApp.MainPage"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:converter="clr-namespace:XFTravelApp.Converters"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:ext="clr-namespace:XFTravelApp.Extensions"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="PrincipalColor">#f8b732</Color>
+            <Color x:Key="DaySelectColor">#5654d6</Color>
+            <Color x:Key="TimeLineBackgroundColor">#f8f9fb</Color>
+
+            <Style TargetType="Button">
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup>
+                            <VisualState x:Name="DaySelected">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="{StaticResource DaySelectColor}" />
+                                    <Setter Property="TextColor" Value="White" />
+                                    <Setter Property="Margin" Value="{OnPlatform Android='0', iOS='0,5'}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="DayUnSelected">
+                                <VisualState.Setters>
+                                    <Setter Property="TextColor" Value="Black" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+            <Style TargetType="Grid">
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal" />
+                            <VisualState x:Name="Selected">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="LightSkyBlue" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <StackLayout>
+        <Grid BackgroundColor="Transparent" HeightRequest="350">
+            <Frame
+                Margin="0,0,0,-27"
+                BackgroundColor="{StaticResource PrincipalColor}"
+                HasShadow="False"
+                HeightRequest="25"
+                VerticalOptions="StartAndExpand" />
+            <Frame
+                Padding="0,0,0,20"
+                BackgroundColor="{StaticResource PrincipalColor}"
+                CornerRadius="25"
+                HasShadow="False">
+                <StackLayout>
+                    <Image BackgroundColor="Transparent" Source="{ext:ImageResource XFTravelApp.Resources.Images.PrincipalImage.png}">
+                        <Image.Margin>
+                            <OnPlatform x:TypeArguments="Thickness">
+                                <On Platform="Android" Value="0,0,0,0" />
+                                <On Platform="iOS" Value="0,30,0,0" />
+                            </OnPlatform>
+                        </Image.Margin>
+                        <Image.HeightRequest>
+                            <OnPlatform x:TypeArguments="x:Double">
+                                <On Platform="Android" Value="100" />
+                                <On Platform="iOS" Value="120" />
+                            </OnPlatform>
+                        </Image.HeightRequest>
+                    </Image>
+                    <Label Margin="30,0,0,0">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span
+                                    FontAttributes="Bold"
+                                    FontSize="28"
+                                    Text="San Francisco &#10;"
+                                    TextColor="White" />
+                                <Span
+                                    FontSize="17"
+                                    Text="17 November - 24 November"
+                                    TextColor="White" />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                </StackLayout>
+            </Frame>
+        </Grid>
+
+        <ScrollView
+            BackgroundColor="Transparent"
+            Orientation="Horizontal"
+            VerticalOptions="Start"
+            VerticalScrollBarVisibility="Never">
+            <StackLayout
+                x:Name="DaysBlock"
+                HorizontalOptions="FillAndExpand"
+                Orientation="Horizontal" />
+        </ScrollView>
+
+        <CollectionView
+            BackgroundColor="{StaticResource TimeLineBackgroundColor}"
+            ItemsSource="{Binding TravelSchedule}"
+            SelectedItems="{Binding Commantest}"
+            SelectionMode="Single">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout
+                    ItemSpacing="5"
+                    Orientation="Vertical"
+                    SnapPointsAlignment="Start"
+                    SnapPointsType="Mandatory" />
+
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Padding="10,5" BackgroundColor="Transparent">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="50" />
+                            <ColumnDefinition Width="30" />
+                            <ColumnDefinition Width="70" />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <Label
+                            Grid.Row="0"
+                            Grid.RowSpan="2"
+                            Grid.Column="0"
+                            BackgroundColor="Transparent"
+                            FontSize="18"
+                            Text="{Binding Time}" />
+
+                        <Image
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            BackgroundColor="Transparent"
+                            HeightRequest="30"
+                            Source="{Binding TransportType, Converter={converter:ImageSourceConverter}}" />
+                        <BoxView
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            HorizontalOptions="Center"
+                            IsVisible="{Binding IsLast, Converter={converter:NullBoolConverter}}"
+                            VerticalOptions="Fill"
+                            WidthRequest="2"
+                            Color="{Binding TransportColor}" />
+
+                        <!--
+                            ここで画像をテキストと同じ高さに表示するために
+                            HeightRequestに0を指定している.なぜかはわからない.
+                            これがない場合,上のBoxViewのIsVisibleを非表示がfalseになったときに
+                            画像が期待よりも縦に長く表示される
+                        -->
+                        <Frame
+                            Grid.Row="0"
+                            Grid.RowSpan="2"
+                            Grid.Column="2"
+                            Padding="0"
+                            BackgroundColor="Transparent"
+                            CornerRadius="10"
+                            HeightRequest="0"
+                            IsClippedToBounds="True">
+                            <Image
+                                Aspect="AspectFill"
+                                BackgroundColor="Transparent"
+                                Source="{Binding Picture, Converter={converter:ImageSourceConverter}}" />
+                        </Frame>
+
+                        <StackLayout
+                            Grid.Row="0"
+                            Grid.RowSpan="2"
+                            Grid.Column="3"
+                            BackgroundColor="Transparent">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                Text="{Binding Name}" />
+                            <Label
+                                FontSize="15"
+                                Text="{Binding Address1}"
+                                TextColor="Silver" />
+                            <Label
+                                FontSize="15"
+                                Text="{Binding Address2}"
+                                TextColor="Silver" />
+                        </StackLayout>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </StackLayout>
+</ContentPage>
